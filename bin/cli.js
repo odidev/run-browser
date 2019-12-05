@@ -13,7 +13,7 @@ var args = parseArgs(process.argv.slice(2));
 var filename = args._[0];
 var port = Number(args.p || args.port) || 3000;
 var help = args.help || args.h || args._.length === 0;
-var phantom = args.b || args.phantom || args.phantomjs;
+var chromium = args.b || args.chromium || args.chromium-browser;
 var report = args.p || args.report || args.istanbul;
 var debug = args.d || args.debug;
 var timeout = args.t || args.timeout || Infinity;
@@ -27,7 +27,7 @@ if (help) {
     '',
     'Options:',
     '  -p --port <number> The port number to run the server on (default: 3000)',
-    '  -b --phantom       Use the phantom headless browser to run tests and then exit with the correct status code (if tests output TAP)',
+    '  -b --chromium       Use the chromium headless browser to run tests and then exit with the correct status code (if tests output TAP)',
     '  -r --report        Generate coverage Istanbul report. Repeat for each type of coverage report desired. (default: text only)',
     '  -t --timeout       Global timeout in milliseconds for tests to finish. (default: Infinity)',
     '  -m --mock          Include given JS file and use for handling requests to /mock*',
@@ -40,22 +40,26 @@ if (help) {
   process.exit(process.argv.length === 3 ? 0 : 1);
 }
 
-var server = runbrowser(filename, report, phantom, mockserver);
+var server = runbrowser(filename, report, chromium, mockserver);
 server.listen(port);
 
-if (!phantom) {
+
+if (!chromium) {
   console.log('Open a browser and navigate to "http://localhost:' + port + '"');
 } else {
-  var proc = runbrowser.runPhantom('http://localhost:' + port + '/');
-
-  proc.stdout.pipe(process.stdout);
-  proc.stderr.pipe(process.stderr);
+(async () => {
+  const puppeteer = require('puppeteer');
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('http://localhost:' + port + '/');
+  page.on('console', msg => console.log(msg.text()));
 
   if (timeout < Infinity) {
-    setTimeout(function() {
+    setTimeout(async function() {
       console.log(fmt('Timeout of %dms exceeded', timeout));
-      proc.kill();
+      await browser.close();
       server.close();
     }, timeout);
   }
+})()
 }

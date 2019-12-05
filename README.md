@@ -16,7 +16,7 @@ The simplest way to run testling type tests in the browser
 
     Options:
       -p --port <number> The port number to run the server on (default: 3000)
-      -b --phantom       Use the phantom headless browser to run tests and then exit with the correct status code (if tests output TAP)
+      -b --chromium       Use the chromium headless browser to run tests and then exit with the correct status code (if tests output TAP)
       -r --report        Generate coverage Istanbul report. Repeat for each type of coverage report desired. (default: text only)
       -t --timeout       Global timeout in milliseconds for tests to finish. (default: Infinity)
       -m --mock          Include given JS file and use for handling requests to /mock*
@@ -51,7 +51,7 @@ var server = http.createServer(function (req, res) {
 server.listen(3000);
 ```
 
-For advanced phantomjs usage, just read the source in `./bin/cli.js`
+For advanced chromium-browser usage, just read the source in `./bin/cli.js`
 
 ## Mock server
 
