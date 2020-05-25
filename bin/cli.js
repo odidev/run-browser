@@ -13,7 +13,7 @@ var args = parseArgs(process.argv.slice(2));
 var filename = args._[0];
 var port = Number(args.p || args.port) || 3000;
 var help = args.help || args.h || args._.length === 0;
-var chromium = args.b || args.chromium || args.chromium-browser;
+var chromium = args.b || args.chromium || args.puppeteer;
 var report = args.p || args.report || args.istanbul;
 var debug = args.d || args.debug;
 var timeout = args.t || args.timeout || Infinity;
